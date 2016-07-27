@@ -1,0 +1,217 @@
+﻿package com.example.redfire.sendmassage;
+
+
+import android.content.Intent;
+<<<<<<< HEAD
+
+import android.content.res.AssetManager;
+
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import android.widget.EditText;
+import android.widget.Toast;
+
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+=======
+import android.content.res.AssetManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import jxl.Cell;
+import jxl.Sheet;
+import jxl.Workbook;
+<<<<<<< HEAD
+=======
+import jxl.read.biff.BiffException;
+
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+
+public class MainActivity extends AppCompatActivity {
+    private Button btn_file;
+    private Button btn_send;
+<<<<<<< HEAD
+
+=======
+    int row;
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+    private EditText et_massage;
+    private static String TAG = "MainActivity";
+
+    ArrayList<HashMap<String, String>> al;
+    ListView lv;
+
+
+    private Button mBtOpenFile;
+
+    private Intent fileChooserIntent;
+
+    private static final int REQUEST_CODE = 1;   //请求码
+    public static final String EXTRA_FILE_CHOOSER = "file_chooser";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+<<<<<<< HEAD
+
+=======
+        btn_send = (Button) findViewById(R.id.btn_send);
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+        btn_file = (Button) findViewById(R.id.btn_file);
+        et_massage = (EditText) findViewById(R.id.et_massage);
+        fileChooserIntent = new Intent(this,
+                FileChooserActivity.class);
+
+        btn_file.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                    startActivityForResult(fileChooserIntent, REQUEST_CODE);
+                else
+                    toast(getText(R.string.sdcard_unmonted_hint));
+            }
+        });
+<<<<<<< HEAD
+
+        initListView();
+       // sendMessage();
+    }
+
+  //  private void sendMessage() {
+   // }
+
+
+    protected void initListView() {
+        lv = (ListView) findViewById(R.id.listView);
+        al = new ArrayList<HashMap<String, String>>();
+        AssetManager am = this.getAssets();
+        InputStream is = null;
+        try {
+
+            is = am.open("data.xls");
+            Workbook wb = Workbook.getWorkbook(is);
+            Sheet sheet = wb.getSheet(0);
+            int row = sheet.getRows();
+            HashMap<String, String> hm;
+            for (int i = 0; i < row; ++i) {
+                Cell cellname = sheet.getCell(0, i);
+                Cell cellcollege = sheet.getCell(1, i);
+                Cell cellphone = sheet.getCell(2, i);
+                System.out.println(cellname.getContents() + ":" + cellcollege.getContents() + ":" + cellphone.getContents());
+                hm = new HashMap<String, String>();
+                hm.put("NAME", cellname.getContents());
+                hm.put("COLLEGE", cellcollege.getContents());
+                hm.put("PHONE", cellphone.getContents());
+                al.add(hm);
+            }
+            SimpleAdapter sa = new SimpleAdapter(this, al, R.layout.item_list, new String[]{"NAME", "COLLEGE", "PHONE"}, new int[]{R.id.tv_name, R.id.tv_college, R.id.tv_phone});
+            lv.setAdapter(sa);
+
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+=======
+        btn_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < row; i++) {
+                    String phoneNumber = al.get(i).get("PHONE");
+                    doSendSMSTo(phoneNumber, et_massage.getText().toString());
+                }
+            }
+        });
+    }
+
+    public void doSendSMSTo(String phoneNumber, String message) {
+        if (PhoneNumberUtils.isGlobalPhoneNumber(phoneNumber)) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
+            intent.putExtra("sms_body", message);
+            startActivity(intent);
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+        }
+    }
+
+    private void toast(CharSequence hint) {
+        Toast.makeText(this, hint, Toast.LENGTH_SHORT).show();
+    }
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.v(TAG, "onActivityResult#requestCode:" + requestCode + "#resultCode:" + resultCode);
+        if (resultCode == RESULT_CANCELED) {
+            toast(getText(R.string.open_file_none));
+            return;
+        }
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            //获取路径名
+            String pptPath = data.getStringExtra(EXTRA_FILE_CHOOSER);
+            Log.v(TAG, "onActivityResult # pptPath : " + pptPath);
+<<<<<<< HEAD
+
+        }
+    }
+
+}
+=======
+            lv = (ListView) findViewById(R.id.listView);
+            al = new ArrayList<HashMap<String, String>>();
+            File file = new File(pptPath);
+            Workbook wb = null;
+            try {
+                wb = Workbook.getWorkbook(file);
+                Sheet sheet = wb.getSheet(0);
+                int row = sheet.getRows();
+                HashMap<String, String> hm;
+                for (int i = 0; i < row; ++i) {
+                    Cell cellname = sheet.getCell(0, i);
+                    Cell cellcollege = sheet.getCell(1, i);
+                    Cell cellphone = sheet.getCell(2, i);
+                    System.out.println(cellname.getContents() + ":" + cellcollege.getContents() + ":" + cellphone.getContents());
+                    hm = new HashMap<String, String>();
+                    hm.put("NAME", cellname.getContents());
+                    hm.put("COLLEGE", cellcollege.getContents());
+                    hm.put("PHONE", cellphone.getContents());
+                    al.add(hm);
+                }
+                SimpleAdapter sa = new SimpleAdapter(this, al, R.layout.item_list, new String[]{"NAME", "COLLEGE", "PHONE"}, new int[]{R.id.tv_name, R.id.tv_college, R.id.tv_phone});
+                lv.setAdapter(sa);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (BiffException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+>>>>>>> 7dd334912894245b801b31a8bf66511a93ec17fb
